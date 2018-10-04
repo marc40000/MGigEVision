@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\MGEV">
+      <UniqueIdentifier>{130a5694-ee97-42f6-904f-1d198faf4c75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\MLibs2">
+      <UniqueIdentifier>{150a8a32-5eea-4419-8f37-64f2f2f4de6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\MLibs2\Dep">
+      <UniqueIdentifier>{d1feb73f-337c-43ae-9c9b-9e3525540cfa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\MLibs2\Dep\zlib">
+      <UniqueIdentifier>{68308289-0c00-46b6-98a5-dc31cecca80e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GenICam">
+      <UniqueIdentifier>{0d71f80e-a8bc-4a57-95e0-a1520181dbc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GenICam\GenApi">
+      <UniqueIdentifier>{20e1b4d2-6095-40af-9fc7-4beee2abb610}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MGigEVisionDev.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MGEV\MGEVUDP.h">
+      <Filter>Header Files\MGEV</Filter>
+    </ClInclude>
+    <ClInclude Include="MGEV\MGEV.h">
+      <Filter>Header Files\MGEV</Filter>
+    </ClInclude>
+    <ClInclude Include="MGEV\MGEVCamera.h">
+      <Filter>Header Files\MGEV</Filter>
+    </ClInclude>
+    <ClInclude Include="MGEV\MGEVAddresses.h">
+      <Filter>Header Files\MGEV</Filter>
+    </ClInclude>
+    <ClInclude Include="MGEV\MGEVValues.h">
+      <Filter>Header Files\MGEV</Filter>
+    </ClInclude>
+    <ClInclude Include="MLibs2\Dep\zlib\rel\zlib.h">
+      <Filter>Header Files\MLibs2\Dep\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="MLibs2\Dep\zlib\rel\zconf.h">
+      <Filter>Header Files\MLibs2\Dep\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="MGEV\MGEVZip.h">
+      <Filter>Header Files\MGEV</Filter>
+    </ClInclude>
+    <ClInclude Include="MBMP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GenICam\include\GenApi\GenApi.h">
+      <Filter>Header Files\GenICam\GenApi</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
