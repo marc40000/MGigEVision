@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------------------------
-MGEV - MGigEVision v1 2018
+MGEV - MGigEVision v2 2018
 
 MGEV is an open source free to use library that allows to communicate with GigEVision compatible
 cameras. It has no external dependencies so it should be easy to integrate in other projects.
@@ -71,14 +71,25 @@ debug versions that are not publicly available if you compile your project in de
 Therefore MGEV defines GENICAM_NO_AUTO_IMPLIB which disables these automatik linking
 functionality. You also have to link to zlib.
 
-The ydim parameter of the Recv Callback for some reason is always 0. Maybe the offsset is
-wrong. You can calculate the ydim of the (amount of bytes received) / (bytes per pixel * xdim).
+The ydim parameter is now correct.
+
+If you can connect to your camera and write and read memory but you don't receive images,
+try disableing your firewall. The issue here is, in GigEVision, you tell the camera over the
+control port where to send the image stream. You don't know which source port the camera will
+choose. So your firewall will get data on a udp port which you didn't use first in the
+opposite direction and therefore might drop the data. If you knew the source port, you could
+send a packet there to punch a hole in the firewall. But you don't know it so you can't do
+that. If disabling your firewall works, you can enable it again and add an appropriate rule
+instead.
 
 Special thanks to the author of https://github.com/wjl12/wjl12-opengigevision . That code was
 very helpful when writing MGEV. (I didn't use just that becauseit has no windows support and
 has boost and vigra dependency.)
 
-I tested MGEV with a FLIR AX5, a Manta_G-125C and a Teledyne Dalsa Spyder GigE SG-14.
+I tested MGEV with a FLIR AX5, a Manta_G-125C, a Teledyne Dalsa Spyder GigE SG-14 and
+a Jenoptik VarioCam HD head 700 (This one adds 4 lines of additional header in the image
+itself which you have to cut away).
 
-Marc Rochel
+
+2018/10/08 Marc Rochel
 ------------------------------------------------------------------------------------------------

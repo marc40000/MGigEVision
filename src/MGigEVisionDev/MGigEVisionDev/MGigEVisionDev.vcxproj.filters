@@ -74,5 +74,8 @@
     <ClInclude Include="GenICam\include\GenApi\GenApi.h">
       <Filter>Header Files\GenICam\GenApi</Filter>
     </ClInclude>
+    <ClInclude Include="MGEV\MGEVNUCTypes.h">
+      <Filter>Header Files\MGEV</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

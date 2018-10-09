@@ -170,6 +170,7 @@
     <ClInclude Include="MGEV\MGEV.h" />
     <ClInclude Include="MGEV\MGEVAddresses.h" />
     <ClInclude Include="MGEV\MGEVCamera.h" />
+    <ClInclude Include="MGEV\MGEVNUCTypes.h" />
     <ClInclude Include="MGEV\MGEVUDP.h" />
     <ClInclude Include="MGEV\MGEVValues.h" />
     <ClInclude Include="MGEV\MGEVZip.h" />

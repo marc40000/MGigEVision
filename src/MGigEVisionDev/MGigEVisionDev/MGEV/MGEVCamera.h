@@ -6,6 +6,7 @@
 #include "MGEVUDP.h"
 #include "MGEVAddresses.h"
 #include "MGEVValues.h"
+#include "MGEVNUCTypes.h"
 #include "MGEVZip.h"
 #include "zlib.h"
 
@@ -42,10 +43,14 @@ public:
 	unsigned int t2;
 	unsigned int t3;
 	unsigned int timestamp;
-	unsigned char t4[6];
+	/*unsigned char t4[6];
 	unsigned short int xdim;
 	unsigned short int t5;
 	unsigned short int ydim;
+	unsigned char t6[10];*/
+	unsigned int pixelformat;
+	unsigned int xdim;
+	unsigned int ydim;
 	unsigned char t6[10];
 
 	inline void Invert()
@@ -56,9 +61,9 @@ public:
 		t2 = ntohl(t2);
 		t3 = ntohl(t3);
 		timestamp = ntohl(timestamp);
-		xdim = ntohs(xdim);
-		ydim = ntohs(t5);
-		ydim = ntohs(ydim);
+		pixelformat = ntohl(pixelformat);
+		xdim = ntohl(xdim);
+		ydim = ntohl(ydim);
 	}
 };
 
@@ -179,21 +184,23 @@ private:
 	unsigned int genicamaddr_AcquisitionStart;
 	unsigned int genicamaddr_AcquisitionStop;
 	
+	unsigned int nuctype;
 	unsigned int genicamaddr_NUCMode;
 	unsigned int genicamaddr_NUCAction;
 	unsigned int genicamaddr_NUCActionLong;
 
 
 public:
-	inline int Init(const unsigned short localport, const unsigned int remoteip, MGEVCameraCallback * callback)
+	inline int Init(const unsigned int localip, const unsigned short localport, const unsigned int remoteip, MGEVCameraCallback * callback)
 	{
 		initialized = false;
 
 		udpcallback.camera = this;
 		udpstreamcallback.camera = this;
 		streamenabled = false;
+		nuctype = MGEVNUCTypeNA;
 
-		int res = udp.Init(localport, remoteip, 3956, &udpcallback);
+		int res = udp.Init(localip, localport, remoteip, 3956, &udpcallback);
 		if (res != 0)
 		{
 			return res;
@@ -208,8 +215,6 @@ public:
 		xml = new char[0];
 		streamdataframedata = new unsigned char[1024 * 1024 * 32];
 		streamdataframedatan = 0;
-
-		SendControl();
 
 		return -1;
 	}
@@ -515,9 +520,20 @@ public:
 
 						genicamaddr_AcquisitionStart = GenICamGetAddress("AcquisitionStart");
 						genicamaddr_AcquisitionStop = GenICamGetAddress("AcquisitionStop");
-						genicamaddr_NUCMode = GenICamGetAddress("NUCMode");
-						genicamaddr_NUCAction = GenICamGetAddress("NUCAction");
-						genicamaddr_NUCActionLong = GenICamGetAddress("NUCActionLong");
+
+						if (nuctype == MGEVNUCTypeFlir)
+						{
+							genicamaddr_NUCMode = GenICamGetAddress("NUCMode");
+							genicamaddr_NUCAction = GenICamGetAddress("NUCAction");
+							genicamaddr_NUCActionLong = GenICamGetAddress("NUCActionLong");
+						}
+						if (nuctype == MGEVNUCTypeJenoptik)
+						{
+							genicamaddr_NUCMode = GenICamGetAddress("ShutterIntv");
+							genicamaddr_NUCAction = GenICamGetAddress("NUC");
+							genicamaddr_NUCActionLong = GenICamGetAddress("NUCLong");
+						}
+
 
 
 						initialized = true;
@@ -587,6 +603,7 @@ public:
 	void Start(const char * xmlfilename = 0, const char * zipfilename = 0)
 	{
 		SendControl();
+		Sleep(1);			// We should wait for the ok, but this seems to be enough.
 
 		if (xmlfilename == 0)
 		{
@@ -615,35 +632,83 @@ public:
 		WriteConfigMemory(MGEVAddressControl, MGEVValueExclusiveAccess);
 	}
 
+	inline void SetNUCType(const unsigned int nuctype)
+	{
+		this->nuctype = nuctype;
+	}
 	inline void NUCEnable()
 	{
-		WriteConfigMemory(genicamaddr_NUCMode, 1);
+		switch (nuctype)
+		{
+		case MGEVNUCTypeFlir:
+		{
+			WriteConfigMemory(genicamaddr_NUCMode, 1);
+			break;
+		}
+		case MGEVNUCTypeJenoptik:
+		{
+			WriteConfigMemory(genicamaddr_NUCMode, 60);		// 60 s is the default for Jenoptik
+			break;
+		}
+		}
 	}
 	inline void NUCDisable()
 	{
-		WriteConfigMemory(genicamaddr_NUCMode, 0);
+		switch (nuctype)
+		{
+		case MGEVNUCTypeFlir:
+		{
+			WriteConfigMemory(genicamaddr_NUCMode, 0);
+			break;
+		}
+		case MGEVNUCTypeJenoptik:
+		{
+			WriteConfigMemory(genicamaddr_NUCMode, 0);		// 0 s seems to disable it for Jenoptik
+			break;
+		}
+		}
 	}
 	inline void NUCAction()
 	{
-		WriteConfigMemory(genicamaddr_NUCAction, 1);
+		switch (nuctype)
+		{
+		case MGEVNUCTypeFlir:
+		case MGEVNUCTypeJenoptik:
+		{
+			WriteConfigMemory(genicamaddr_NUCAction, 1);
+			break;
+		}
+		}
 	}
 	inline void NUCActionLong()
 	{
-		WriteConfigMemory(genicamaddr_NUCActionLong, 1);
+		switch (nuctype)
+		{
+		case MGEVNUCTypeFlir:
+		case MGEVNUCTypeJenoptik:
+		{
+			WriteConfigMemory(genicamaddr_NUCActionLong, 1);
+			break;
+		}
+		}
 	}
 
-	int StartGrab(const unsigned int localip, const unsigned short localport, const unsigned short packetsize = 0x00000438)
+	int StartGrab(const unsigned short localport, const unsigned short packetsize = 0x00000438)
 	{
 		streamenabled = true;
 
-		int res = udpstream.Init(localport, udp.remoteip, 3956, &udpstreamcallback, 0, 1024 * 1024 * 32);
+		int res = udpstream.Init(udp.localip, localport, udp.remoteip, 3956, &udpstreamcallback, 0, 1024 * 1024 * 32);
 		if (res != 0)
 		{
 			return res;
 		}
 
+
+		streamdataframeheader.xdim = -1;
+
+
 		SendControl();
-		WriteConfigMemory(MGEVAddressDataStreamTargetIP, htonl(localip));
+		WriteConfigMemory(MGEVAddressDataStreamTargetIP, htonl(udp.localip));
 		WriteConfigMemory(MGEVAddressDataStreamTargetPort, localport);
 		WriteConfigMemory(MGEVAddressDataStreamPacketSize, packetsize);
 
@@ -698,7 +763,11 @@ public:
 			streamdataframefooter = *footer;
 			streamdataframefooter.Invert();
 
-			callback->RecvFrame(streamdataframeheader, streamdataframefooter, streamdataframedatan, streamdataframedata, streamdataframepacketslost);
+			// in case we miss a bit of the first frame and the header is invalid
+			if (streamdataframeheader.xdim != -1)
+			{
+				callback->RecvFrame(streamdataframeheader, streamdataframefooter, streamdataframedatan, streamdataframedata, streamdataframepacketslost);
+			}
 
 			break;
 		}

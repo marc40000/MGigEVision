@@ -16,6 +16,7 @@ public:
 class MGEVUDP
 {
 public:
+	unsigned int localip;
 	unsigned short localport;
 	unsigned int remoteip;
 	unsigned short remoteport;
@@ -25,8 +26,9 @@ public:
 
 	MGEVUDPCallBack * callback;
 
-	inline int Init(const unsigned short localport, const unsigned int remoteip, const unsigned short remoteport, MGEVUDPCallBack * callback, const int sndbuf = 0, const int rcvbuf = 0)
+	inline int Init(const unsigned int localip, const unsigned short localport, const unsigned int remoteip, const unsigned short remoteport, MGEVUDPCallBack * callback, const int sndbuf = 0, const int rcvbuf = 0)
 	{
+		this->localip = localip;
 		this->localport = localport;
 		this->remoteip = remoteip;
 		this->remoteport = remoteport;
@@ -58,6 +60,7 @@ public:
 		sockaddr_in local;
 		memset(&local, 0, sizeof(local));
 		local.sin_family = AF_INET;
+		local.sin_addr.S_un.S_addr = localip;
 		local.sin_port = htons(localport);
 		if (bind(sockfd, (sockaddr*)&local, sizeof(local)) == -1)
 		{
